@@ -1,0 +1,26 @@
+{
+  "name": "codemule-server",
+  "version": "1.0.0",
+  "description": "back end for codemule code distribution service",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "author": "Jimmy Roland",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/airbnb"
+    ]
+  }
+}
