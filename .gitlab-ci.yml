@@ -6,6 +6,8 @@ build-dev:
   image: docker:latest
   stage: build
   script:
+    - pwd
+    - cd /builds/rukamir/codemule-server
     - docker build -t codemule .
     - docker save codemule > /tmp/codemule.tar
   artifacts:
