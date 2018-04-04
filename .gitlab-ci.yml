@@ -22,5 +22,5 @@ deploy-aws:
   image: python:latest
   stage: deploy
   script:
-    - docker images
+    - ls -ltr
     - pip install awscli --upgrade --user
