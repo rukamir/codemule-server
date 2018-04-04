@@ -10,17 +10,13 @@
   "author": "Jimmy Roland",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "express": "^4.16.3",
-    "jsonwebtoken": "^8.2.0"
+    "jsonwebtoken": "^8.2.0",
+    "mysql": "^2.15.0"
   },
   "devDependencies": {
-    "eslint": "^4.19.1"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/airbnb"
-    ]
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0"
   }
 }

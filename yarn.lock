@@ -82,6 +82,13 @@ arrify@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
 
+axios@^0.18.0:
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
+  dependencies:
+    follow-redirects "^1.3.0"
+    is-buffer "^1.1.5"
+
 babel-code-frame@^6.22.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.26.0.tgz#63fd43f7dc1e3bb7ce35947db8fe369a3f58c74b"
@@ -97,6 +104,10 @@ balanced-match@^1.0.0:
 base64url@2.0.0, base64url@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/base64url/-/base64url-2.0.0.tgz#eac16e03ea1438eff9423d69baa36262ed1f70bb"
+
+bignumber.js@4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.0.4.tgz#7c40f5abcd2d6623ab7b99682ee7db81b11889a4"
 
 body-parser@1.18.2:
   version "1.18.2"
@@ -302,6 +313,16 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
+eslint-config-airbnb-base@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-airbnb-base/-/eslint-config-airbnb-base-12.1.0.tgz#386441e54a12ccd957b0a92564a4bafebd747944"
+  dependencies:
+    eslint-restricted-globals "^0.1.1"
+
+eslint-restricted-globals@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-restricted-globals/-/eslint-restricted-globals-0.1.1.tgz#35f0d5cbc64c2e3ed62e93b4b1a7af05ba7ed4d7"
+
 eslint-scope@^3.7.1:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-3.7.1.tgz#3d63c3edfda02e06e01a452ad88caacc7cdcb6e8"
@@ -480,6 +501,12 @@ flat-cache@^1.2.1:
     graceful-fs "^4.1.2"
     write "^0.2.1"
 
+follow-redirects@^1.3.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.4.1.tgz#d8120f4518190f55aac65bb6fc7b85fcd666d6aa"
+  dependencies:
+    debug "^3.1.0"
+
 forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
@@ -599,6 +626,10 @@ inquirer@^3.0.6:
 ipaddr.js@1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.6.0.tgz#e3fa357b773da619f26e95f049d055c72796f86b"
+
+is-buffer@^1.1.5:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
 
 is-fullwidth-code-point@^2.0.0:
   version "2.0.0"
@@ -791,6 +822,15 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
+mysql@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.15.0.tgz#ea16841156343e8f2e47fc8985ec41cdd9573b5c"
+  dependencies:
+    bignumber.js "4.0.4"
+    readable-stream "2.3.3"
+    safe-buffer "5.1.1"
+    sqlstring "2.3.0"
+
 natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
@@ -874,6 +914,10 @@ prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
 
+process-nextick-args@~1.0.6:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
+
 process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
@@ -909,6 +953,18 @@ raw-body@2.3.2:
     http-errors "1.6.2"
     iconv-lite "0.4.19"
     unpipe "1.0.0"
+
+readable-stream@2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.3.tgz#368f2512d79f9d46fdfc71349ae7878bbc1eb95c"
+  dependencies:
+    core-util-is "~1.0.0"
+    inherits "~2.0.3"
+    isarray "~1.0.0"
+    process-nextick-args "~1.0.6"
+    safe-buffer "~5.1.1"
+    string_decoder "~1.0.3"
+    util-deprecate "~1.0.1"
 
 readable-stream@^2.2.2:
   version "2.3.5"
@@ -1032,6 +1088,10 @@ slice-ansi@1.0.0:
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
+
+sqlstring@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.0.tgz#525b8a4fd26d6f71aa61e822a6caf976d31ad2a8"
 
 "statuses@>= 1.3.1 < 2", "statuses@>= 1.4.0 < 2":
   version "1.5.0"
