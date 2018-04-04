@@ -1,6 +1,6 @@
 stages:
-  build
-  deploy
+  - build
+  - deploy
   
 build-dev:
   image: docker:latest
