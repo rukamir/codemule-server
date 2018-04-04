@@ -16,7 +16,6 @@ build-dev:
 deploy-aws:
   image: python:latest
   stage: deploy
-  only: dev
   script:
     - docker images
     - pip install awscli --upgrade --user
