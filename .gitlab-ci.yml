@@ -1,0 +1,13 @@
+image: docker:latest
+  
+build-dev:
+  stage: build
+  only: dev
+  script:
+    - docker build -t codemule .
+    - docker save codemule > /tmp/codemule.tar
+
+artifacts:
+    paths:
+      - /tmp/codemule.tar
+    expire_in: 1 week
