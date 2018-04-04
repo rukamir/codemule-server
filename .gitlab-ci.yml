@@ -12,10 +12,10 @@ build-dev:
     - pwd
     - cd /builds/rukamir/codemule-server
     - docker build -t codemule .
-    - docker save codemule > /tmp/codemule.tar
+    - docker save codemule > codemule.tar
   artifacts:
     paths:
-      - /tmp/codemule.tar
+      - codemule.tar
     expire_in: 1 week
 
 deploy-aws:
