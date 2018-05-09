@@ -1,0 +1,26 @@
+stages:
+  - build
+  - deploy
+  
+services:
+- docker:dind
+  
+build-dev:
+  image: docker:latest
+  stage: build
+  script:
+    - pwd
+    - cd /builds/rukamir/codemule-server
+    - docker build -t codemule .
+    - docker save codemule > codemule.tar
+  artifacts:
+    paths:
+      - codemule.tar
+    expire_in: 1 week
+
+deploy-aws:
+  image: python:latest
+  stage: deploy
+  script:
+    - ls -ltr
+    - pip install awscli --upgrade --user
