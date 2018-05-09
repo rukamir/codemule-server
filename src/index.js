@@ -29,7 +29,7 @@ app.get('/code/:uid', (req, res) => {
 });
 
 app.post('/send', (req, res) => {
-  res.status(200).send(`send a list of codes to mq to be processed and marked as sent; this will mark as pending and to whom`);
+  res.status(200).send(`send a list of codes to mq to be processed and marked as sent; this will mark as pending and to whom in db`);
 });
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))

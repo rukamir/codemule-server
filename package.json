@@ -4,19 +4,26 @@
   "description": "back end for codemule code distribution service",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest -o",
+    "test-watch": "jest --watch",
     "start": "node src/index.js"
   },
   "author": "Jimmy Roland",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.233.1",
     "axios": "^0.18.0",
     "express": "^4.16.3",
-    "jsonwebtoken": "^8.2.0",
+    "jsonwebtoken": "^8.2.1",
+    "jwk-to-pem": "^2.0.0",
     "mysql": "^2.15.0"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-jest": "^22.4.3",
     "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0"
+    "eslint-config-airbnb-base": "^12.1.0",
+    "jest": "^22.4.3",
+    "regenerator-runtime": "^0.11.1"
   }
 }
