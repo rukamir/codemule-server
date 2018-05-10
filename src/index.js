@@ -1,9 +1,11 @@
 var express = require('express');
 var db = require('./services/db');
+var jwt = require('./services/jwt');
+var authCheck = require('./services/jwt').authCheck;
 
 const app = express();
 
-app.get('/:userId', (req, res) => {
+app.get('/:userId', authCheck, (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
   db.getAllCodes(1);
 }).post((req, res) => 
