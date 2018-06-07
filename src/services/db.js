@@ -5,12 +5,14 @@ const SQL_USER = process.env.SQL_USER;
 const SQL_PASS = process.env.SQL_PASS;
 const SQL_DB_NAME = process.env.SQL_DB_NAME;
 
-var connection = mysql.createConnection({
+var connection = mysql.createPool({
+  connectionLimit : 5,
   host     : SQL_ADDRESS,
   user     : SQL_USER,
   password : SQL_PASS,
   database : SQL_DB_NAME
 });
+
 
 var query = function( sql, args ) {
   return new Promise( ( resolve, reject ) => {

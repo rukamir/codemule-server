@@ -52,8 +52,6 @@ app.route('/codes')
       ];
     });
 
-    console.log(newDbEntries);
-
     db.insertNewListOfCodes(newDbEntries)
       .then((row) => {
         console.log(row);
