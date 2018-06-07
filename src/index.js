@@ -19,8 +19,6 @@ app.get('/user/:userId', authCheck, (req, res) => {
 app.route('/codes')
   .get((req, res) => {
     var userid = decoder(req.get('Authorization')).userid
-    // var codes = db.getAllCodes(userid);
-    // res.status(200).send(codes);
 
     db.getAllCodes(userid)
     .then((row) => {
@@ -65,6 +63,9 @@ app.route('/codes')
 
 app.post('/code', (req, res) => {
   console.log(JSON.stringify(req.body));
+
+
+
   res.send(JSON.stringify(req.body));
 });
 
@@ -85,7 +86,29 @@ app.get('/codes/unvouched', (req, res) => {
 });
 
 app.get('/code/:uid', (req, res) => {
-  res.status(200).send(`get single code`);
+  var userid = decoder(req.get('Authorization')).userid
+
+  db.getSingleCode(userid, req.params.uid)
+    .then((row) => {
+      let responseBody = {
+        id:           row[0].id,
+        code:         row[0].code,
+        title:        row[0].title,
+        description:  row[0].description,
+        sent:         row[0].sent,
+        recepient:    row[0].recepient,
+        unique:       row[0].unique,
+        status:       row[0].status,
+        expiration:   row[0].expiration,
+        added:        row[0].added,
+        filename:     row[0].filename,
+      };
+
+      res.status(200).send(responseBody);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
 });
 
 app.post('/send/:codeId', (req, res) => {

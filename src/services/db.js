@@ -42,7 +42,7 @@ module.exports = {
     return query('SELECT * FROM voucher WHERE owner_id = ? AND sent IS NULL', [userId]);
   },
   getSingleCode(userId, codeId) {
-    return query('SELECT * FROM voucher WHERE id = ? AND owner_id ?', 
+    return query('SELECT * FROM `voucher` WHERE `id` = ? AND `owner_id` = ?', 
     [codeId, userId]);
   },
   insertNewListOfCodes(codeList) {
