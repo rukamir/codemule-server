@@ -1,10 +1,12 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var db = require('./services/db');
 var jwt = require('./services/jwt');
 var authCheck = require('./services/jwt').authCheck;
 var decoder = require('./services/jwt').jwtdecoder;
 
 const app = express();
+app.use(bodyParser.json()); // for parsing application/json
 
 app.get('/user/:userId', authCheck, (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
@@ -13,20 +15,61 @@ app.get('/user/:userId', authCheck, (req, res) => {
   res.status(200).send(`posted to user ${req.params.userId}`)
 );
 
-app.get('/codes', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid
-  // var codes = db.getAllCodes(userid);
-  // res.status(200).send(codes);
 
-  db.getAllCodes(userid)
-  .then((row) => {
-    res.status(200).send(row);
-  }).catch((err) => {
-    res.status(500).send(err);
+app.route('/codes')
+  .get((req, res) => {
+    var userid = decoder(req.get('Authorization')).userid
+    // var codes = db.getAllCodes(userid);
+    // res.status(200).send(codes);
+
+    db.getAllCodes(userid)
+    .then((row) => {
+      res.status(200).send(row);
+    }).catch((err) => {
+      res.status(500).send(err);
+    });
+  })
+  .post((req, res) => {
+    var userid = decoder(req.get('Authorization')).userid
+    var badVouchers = req.body.filter( (voucher) => {
+      if (!voucher.title) {
+        return voucher;
+      }
+    });
+
+    if (Array.isArray(badVouchers) && badVouchers.length) {
+      res.status(400).send(badVouchers);
+    }
+
+    var newDbEntries = req.body.map((item) => {
+      return [
+        userid,
+        item.code || '',
+        item.title,
+        item.description || '',
+        item.unique,
+        '2018-06-01'
+      ];
+    });
+
+    console.log(newDbEntries);
+
+    db.insertNewListOfCodes(newDbEntries)
+      .then((row) => {
+        console.log(row);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+    res.status(201).send(newDbEntries);
   });
-}).post((req, res) => {
-  res.status(200).send(`create a list of codes`);
+
+
+app.post('/code', (req, res) => {
+  console.log(JSON.stringify(req.body));
+  res.send(JSON.stringify(req.body));
 });
+
 
 app.get('/codes/unique', (req, res) => {
   // res.status(200).send(`get list of all unique code unvouched titles and counts`);
@@ -35,7 +78,7 @@ app.get('/codes/unique', (req, res) => {
   .then((row) => {
     res.status(200).send(row);
   }).catch((err) => {
-    res.status(200).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -49,25 +92,24 @@ app.get('/code/:uid', (req, res) => {
 
 app.post('/send/:codeId', (req, res) => {
   // mark as pending and send SNS
-  var userid = decoder(req.get('Authorization')).userid
+  var userid = decoder(req.get('Authorization')).userid;
   db.updateCodeToPending(userid, req.params.codeId)
   .then((row) => {
     console.log(row);
-    res.status(200).send(row);
+    res.status(204).send(row);
   })
   .catch((err) => {
-    console.log(err);
-    res.status(200).send(err);
+    res.status(500).send(err);
   });
 });
 
 app.get('/', (req, res) => {
   console.log(JSON.stringify(decoder(req.get('Authorization'))));
-  db.getAllCodes(1)
+  db.getAllCodes()
   .then((row) => {
     res.status(200).send(row);
   }).catch((err) => {
-    res.status(500).send(err);
+    res.status(500).send('Error occured');
   });
 });
 

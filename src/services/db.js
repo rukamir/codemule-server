@@ -16,6 +16,7 @@ var query = function( sql, args ) {
   return new Promise( ( resolve, reject ) => {
       connection.query( sql, args, ( err, rows ) => {
           if ( err ) {
+            console.log(err);
             return reject( err );
           } 
           resolve( rows );
@@ -25,7 +26,7 @@ var query = function( sql, args ) {
 
 module.exports = {
   getAllCodes(userId) {
-    return query('SELECT * FROM voucher WHERE id = ?', [userId]);
+    return query('SELECT * FROM `voucher` WHERE `owner_id` = ?', [userId]);
   },
   getUnvouchedCodes(userId) {
     return query('SELECT * FROM voucher '
@@ -42,7 +43,11 @@ module.exports = {
     return query('SELECT * FROM voucher WHERE id = ? AND owner_id ?', 
     [codeId, userId]);
   },
-  insertNewListOfCodes(userId, codeList) {
+  insertNewListOfCodes(codeList) {
+    return query('INSERT INTO `voucher` ' + 
+    '(`owner_id`, `code`, `title`, `description`, `unique`, `added`) ' +
+    'VALUES ?', 
+    [codeList]);
   },
   insertNewSingleCode(userId, code, title, desc, unique) {
     return query(`INSERT INTO voucher (owner_id, code, title, description, unique, added) '

@@ -13,7 +13,6 @@ const pems = {}
 axios.get(jwkAddress)
   .then(function (response) {
     jwt_set = response.data;
-    //console.log(response.data);
 
     for(let i = 0; i<jwt_set.keys.length; i++){
       const jwk = {
@@ -26,9 +25,6 @@ axios.get(jwkAddress)
       // append PEM to the pems object, with the kid as the identifier
       pems[jwt_set.keys[i].kid] = pem
     }
- 
-    //console.log(pems);
-    debugger
   })
   .catch(function (error) {
     console.log(error);
@@ -38,7 +34,6 @@ exports.authCheck = function(req, res, next){
  const jwtToken = req.headers.Authorizaion
  ValidateToken(pems, jwtToken)
    .then((data)=>{
-    console.log(data)
     next()
    })
    .catch((err)=>{
