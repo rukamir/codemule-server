@@ -35,7 +35,7 @@ module.exports = {
     + 'WHERE sent IS NULL AND owner_id = ?', [userId]);
   },
   getAllUniqueUnvouchedCodesWithCounts(userId) {
-    return query('SELECT count(distinct title), title FROM voucher '
+    return query('SELECT count(distinct title) as `count`, title FROM voucher '
     + 'WHERE sent IS NULL AND owner_id = ? GROUP BY title', [userId]);
   },
   getAllUnvouchedCodes(userId) {

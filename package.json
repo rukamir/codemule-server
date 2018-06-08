@@ -12,7 +12,7 @@
   "author": "Jimmy Roland",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.233.1",
+    "aws-sdk": "^2.252.1",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.3",

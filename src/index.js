@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var db = require('./services/db');
 var jwt = require('./services/jwt');
+var storage = require('./services/storage');
 var authCheck = require('./services/jwt').authCheck;
 var decoder = require('./services/jwt').jwtdecoder;
 
@@ -22,6 +23,10 @@ app.route('/codes')
 
     db.getAllCodes(userid)
     .then((row) => {
+      var allEntries = row.map((item) => {
+        delete item.obj_key;
+        return item;
+      });
       res.status(200).send(row);
     }).catch((err) => {
       res.status(500).send(err);
@@ -52,38 +57,46 @@ app.route('/codes')
 
     db.insertNewListOfCodes(newDbEntries)
       .then((row) => {
-        console.log(row);
+        res.status(201).send();
       })
       .catch((err) => {
         res.status(500).send(err);
       });
-    res.status(201).send(newDbEntries);
   });
 
 
 app.post('/code', (req, res) => {
+  // Takes a single code with a base64 encoded image
   console.log(JSON.stringify(req.body));
-
-
-
   res.send(JSON.stringify(req.body));
 });
 
 
 app.get('/codes/unique', (req, res) => {
-  // res.status(200).send(`get list of all unique code unvouched titles and counts`);
   var userid = decoder(req.get('Authorization')).userid
-  db.getUniqueUnvouchedCodes(userid)
+  db.getAllUniqueUnvouchedCodesWithCounts(userid)
   .then((row) => {
     res.status(200).send(row);
   }).catch((err) => {
-    res.status(500).send(err);
+    console.log(err);
+    res.status(500).send();
   });
 });
 
+
 app.get('/codes/unvouched', (req, res) => {
-  res.status(200).send(`get list of all unvouched`);
+  var userid = decoder(req.get('Authorization')).userid
+
+  db.getUnvouchedCodes(userid)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    })
 });
+
 
 app.get('/code/:uid', (req, res) => {
   var userid = decoder(req.get('Authorization')).userid
@@ -111,27 +124,63 @@ app.get('/code/:uid', (req, res) => {
     });
 });
 
+
+app.get('/code/:uid/image', (req, res) => {
+  var userid = decoder(req.get('Authorization')).userid;
+  db.getSingleCode(userid, req.params.uid)
+    .then((row) => {
+      var key = row[0].obj_key;
+      if (key == '' || key == null) {
+        res.status(404).send();
+      } else {
+        storage.getObject(row[0].obj_key)
+          .then((obj) => {
+            res.send(obj.Body);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send();
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+
 app.post('/send/:codeId', (req, res) => {
   // mark as pending and send SNS
   var userid = decoder(req.get('Authorization')).userid;
   db.updateCodeToPending(userid, req.params.codeId)
   .then((row) => {
-    console.log(row);
     res.status(204).send(row);
   })
   .catch((err) => {
-    res.status(500).send(err);
+    console.log(err);
+    res.status(500).send();
   });
 });
+
 
 app.get('/', (req, res) => {
-  console.log(JSON.stringify(decoder(req.get('Authorization'))));
-  db.getAllCodes()
-  .then((row) => {
-    res.status(200).send(row);
-  }).catch((err) => {
-    res.status(500).send('Error occured');
-  });
+  storage.getObject('macros0.jpg')
+    .then((data) => {
+      res.status(200).send(data.Body);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+
+  // console.log(JSON.stringify(decoder(req.get('Authorization'))));
+  // db.getAllCodes()
+  // .then((row) => {
+  //   res.status(200).send(row);
+  // }).catch((err) => {
+  //   res.status(500).send('Error occured');
+  // });
 });
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3000, () => console.log('CodeMule listening on port 3000!'));
