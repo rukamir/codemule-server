@@ -1,4 +1,5 @@
 var express = require('express');
+var cors = require('cors');
 var bodyParser = require('body-parser');
 var db = require('./services/db');
 var jwt = require('./services/jwt');
@@ -7,7 +8,14 @@ var authCheck = require('./services/jwt').authCheck;
 var decoder = require('./services/jwt').jwtdecoder;
 
 const app = express();
+var corsOptions = {
+  origin: 'http://example.com',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors());
+
 app.use(bodyParser.json()); // for parsing application/json
+
 
 app.get('/user/:userId', authCheck, (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
@@ -19,6 +27,7 @@ app.get('/user/:userId', authCheck, (req, res) => {
 
 app.route('/codes')
   .get((req, res) => {
+    console.log(req.get('Authorization'));
     var userid = decoder(req.get('Authorization')).userid
 
     db.getAllCodes(userid)
@@ -72,6 +81,20 @@ app.post('/code', (req, res) => {
 });
 
 
+app.get('/code/:title/single', (req, res) => {
+  var userid = decoder(req.get('Authorization')).userid
+
+  db.getSingleUnvouchedByTitle(userid, req.params.title)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+
+
 app.get('/codes/unique', (req, res) => {
   var userid = decoder(req.get('Authorization')).userid
   db.getAllUniqueUnvouchedCodesWithCounts(userid)
@@ -109,7 +132,7 @@ app.get('/code/:uid', (req, res) => {
         title:        row[0].title,
         description:  row[0].description,
         sent:         row[0].sent,
-        recepient:    row[0].recepient,
+        recipient:    row[0].recipient,
         unique:       row[0].unique,
         status:       row[0].status,
         expiration:   row[0].expiration,
@@ -150,12 +173,16 @@ app.get('/code/:uid/image', (req, res) => {
 });
 
 
-app.post('/send/:codeId', (req, res) => {
-  // mark as pending and send SNS
+app.put('/send/:codeId', (req, res) => {
   var userid = decoder(req.get('Authorization')).userid;
-  db.updateCodeToPending(userid, req.params.codeId)
+  db.updateCodeToPending(userid, req.params.codeId, req.body.recipient)
   .then((row) => {
-    res.status(204).send(row);
+    if (row.changedRows == 1) {
+      // send SNS
+      res.status(204).send();
+    } else {
+      res.status(400).send(req.body);
+    }
   })
   .catch((err) => {
     console.log(err);

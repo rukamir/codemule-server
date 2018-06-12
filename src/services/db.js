@@ -35,11 +35,16 @@ module.exports = {
     + 'WHERE sent IS NULL AND owner_id = ?', [userId]);
   },
   getAllUniqueUnvouchedCodesWithCounts(userId) {
-    return query('SELECT count(distinct title) as `count`, title FROM voucher '
-    + 'WHERE sent IS NULL AND owner_id = ? GROUP BY title', [userId]);
+    return query('SELECT count(title) as `count`, title FROM voucher '
+    + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title', [userId]);
   },
   getAllUnvouchedCodes(userId) {
-    return query('SELECT * FROM voucher WHERE owner_id = ? AND sent IS NULL', [userId]);
+    return query('SELECT * FROM voucher WHERE owner_id = ? AND `sent` IS NULL AND `status` IS NULL', [userId]);
+  },
+  getSingleUnvouchedByTitle(userId, title) {
+    return query('SELECT * FROM `voucher` WHERE `owner_id` = ? AND `title` = ? AND `sent` IS NULL AND `status` IS NULL LIMIT 1', 
+    [userId,
+     title]);
   },
   getSingleCode(userId, codeId) {
     return query('SELECT * FROM `voucher` WHERE `id` = ? AND `owner_id` = ?', 
@@ -56,8 +61,8 @@ module.exports = {
     + 'VALUES (?, ?, ?, ?, ?, CUR_DATE())`,
     [userId, code, title, desc, unique]);
   },
-  updateCodeToPending(userId, codeId) {
-    return query(`UPDATE voucher SET status='pend' WHERE owner_id = ? AND id = ?`, 
-    [userId, codeId]);
+  updateCodeToPending(userId, codeId, recipient) {
+    return query('UPDATE `voucher` SET `status` = "pend", recipient = ? WHERE `owner_id` = ? AND `id` = ? AND `status` IS NULL', 
+    [recipient, userId, codeId]);
   },
 };
