@@ -121,31 +121,51 @@ app.get('/codes/unvouched', (req, res) => {
 });
 
 
-app.get('/code/:uid', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid
+// app.get('/code/:uid', (req, res) => {
+app.route('/code/:uid')
+  .get((req, res) => {
+    var userid = decoder(req.get('Authorization')).userid;
 
-  db.getSingleCode(userid, req.params.uid)
-    .then((row) => {
-      let responseBody = {
-        id:           row[0].id,
-        code:         row[0].code,
-        title:        row[0].title,
-        description:  row[0].description,
-        sent:         row[0].sent,
-        recipient:    row[0].recipient,
-        unique:       row[0].unique,
-        status:       row[0].status,
-        expiration:   row[0].expiration,
-        added:        row[0].added,
-        filename:     row[0].filename,
-      };
+    db.getSingleCode(userid, req.params.uid)
+      .then((row) => {
+        let responseBody = {
+          id:           row[0].id,
+          code:         row[0].code,
+          title:        row[0].title,
+          description:  row[0].description,
+          sent:         row[0].sent,
+          recipient:    row[0].recipient,
+          unique:       row[0].unique,
+          status:       row[0].status,
+          expiration:   row[0].expiration,
+          added:        row[0].added,
+          filename:     row[0].filename,
+        };
 
-      res.status(200).send(responseBody);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
-    });
-});
+        res.status(200).send(responseBody);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+  })
+  .put((req, res) => {
+    var userid = decoder(req.get('Authorization')).userid;
+    var voucherId = req.params.uid;
+    console.log(`voucher ${voucherId} user ${userid}`);
+
+    var voucher = req.body;
+    console.log(JSON.stringify(req.body));
+    db.updateCode(voucher.code, voucher.title, voucher.description, voucher.sent, 
+      voucher.recipient, voucher.unique, voucher.status, voucher.expiration,
+      voucher.filename, voucherId, userid)
+      .then((row) => {
+        console.log(row);
+        res.status(201).send(row);
+      })
+      .catch((err) => {
+        res.status(400).send(err);
+      });
+  });
 
 
 app.get('/code/:uid/image', (req, res) => {

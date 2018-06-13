@@ -65,4 +65,22 @@ module.exports = {
     return query('UPDATE `voucher` SET `status` = "pend", recipient = ? WHERE `owner_id` = ? AND `id` = ? AND `status` IS NULL', 
     [recipient, userId, codeId]);
   },
+  updateCode(code, title, description, sent, recipient, unique, 
+    status, expiration, filename, voucherId, ownerId) {
+      console.log(voucherId);
+      console.log(ownerId);
+    return query('UPDATE `voucher` SET ' +
+      '`code` = ?, ' +
+      '`title` = ?, ' +
+      '`description` = ?, ' +
+      '`sent` = ?, ' +
+      '`recipient` = ?, ' +
+      '`unique` = ?, ' +
+      '`status` = ?, ' +
+      '`expiration` = ?, ' +
+      '`filename` = ? ' +
+      'WHERE `id` = ? AND `owner_id` = ?'
+  ,[code, title, description, sent, recipient, unique, 
+    status, expiration, filename, voucherId, ownerId]);
+  },
 };
