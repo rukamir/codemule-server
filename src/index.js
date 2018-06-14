@@ -27,7 +27,6 @@ app.get('/user/:userId', authCheck, (req, res) => {
 
 app.route('/codes')
   .get((req, res) => {
-    console.log(req.get('Authorization'));
     var userid = decoder(req.get('Authorization')).userid
 
     db.getAllCodes(userid)
@@ -154,6 +153,9 @@ app.route('/code/:uid')
     console.log(`voucher ${voucherId} user ${userid}`);
 
     var voucher = req.body;
+    // if expiration is after today mark as expired
+    // status not able to be set to pend
+    // if image deleted clear filename
     console.log(JSON.stringify(req.body));
     db.updateCode(voucher.code, voucher.title, voucher.description, voucher.sent, 
       voucher.recipient, voucher.unique, voucher.status, voucher.expiration,

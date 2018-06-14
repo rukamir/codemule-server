@@ -57,18 +57,18 @@ module.exports = {
     [codeList]);
   },
   insertNewSingleCode(userId, code, title, desc, unique) {
-    return query(`INSERT INTO voucher (owner_id, code, title, description, unique, added) '
-    + 'VALUES (?, ?, ?, ?, ?, CUR_DATE())`,
+    return query('INSERT INTO `voucher` (`owner_id`, `code`, `title`, `description`, `unique`, `added`) '
+    + 'VALUES (?, ?, ?, ?, ?, CURDATE())',
     [userId, code, title, desc, unique]);
   },
   updateCodeToPending(userId, codeId, recipient) {
-    return query('UPDATE `voucher` SET `status` = "pend", recipient = ? WHERE `owner_id` = ? AND `id` = ? AND `status` IS NULL', 
+    return query('UPDATE `voucher` SET `status` = "pend", `recipient` = ?, `sent` = CURDATE() WHERE `owner_id` = ? AND `id` = ? AND `status` IS NULL', 
     [recipient, userId, codeId]);
   },
   updateCode(code, title, description, sent, recipient, unique, 
     status, expiration, filename, voucherId, ownerId) {
       console.log(voucherId);
-      console.log(ownerId);
+      console.log(expiration);
     return query('UPDATE `voucher` SET ' +
       '`code` = ?, ' +
       '`title` = ?, ' +
