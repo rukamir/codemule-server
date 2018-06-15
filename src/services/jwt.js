@@ -31,23 +31,23 @@ axios.get(jwkAddress)
   });
 
 exports.authCheck = function(req, res, next){
- const jwtToken = req.headers.Authorizaion
+ const jwtToken = req.get('Authorization');
  ValidateToken(pems, jwtToken)
    .then((data)=>{
     next()
    })
    .catch((err)=>{
     console.log(err)
-    res.send(err)
+    res.status(401).send(err)
    })
 }
 
 exports.jwtdecoder = jwt.decode;
 
-function ValidateToken(pems, jwtToken){
+function ValidateToken(pems, jwtAccessToken){
   const p = new Promise((res, rej)=>{
    // PART 1: Decode the JWT token
-   const decodedJWT = jwt.decode(jwtToken, {complete: true})
+   const decodedJWT = jwt.decode(jwtAccessToken, {complete: true})
    // PART 2: Check if its a valid JWT token
    if(!decodedJWT){
     rej("Not a valid JWT token")
@@ -73,7 +73,7 @@ function ValidateToken(pems, jwtToken){
    }
    console.log("Decoding the JWT with PEM!")
    // PART 6: Verify the signature of the JWT token to ensure its really coming from your User Pool
-   jwt.verify(jwtToken, pem, {issuer: jwtIssuer}, function(err, payload){
+   jwt.verify(jwtAccessToken, pem, {issuer: jwtIssuer}, function(err, payload){
     if(err){
      rej("Unauthorized signature for this JWT Token")
     }else{

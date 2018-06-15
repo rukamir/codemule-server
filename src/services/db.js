@@ -67,8 +67,6 @@ module.exports = {
   },
   updateCode(code, title, description, sent, recipient, unique, 
     status, expiration, filename, voucherId, ownerId) {
-      console.log(voucherId);
-      console.log(expiration);
     return query('UPDATE `voucher` SET ' +
       '`code` = ?, ' +
       '`title` = ?, ' +

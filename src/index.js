@@ -1,4 +1,6 @@
 var express = require('express');
+var fs = require('fs');
+var https = require('https');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var db = require('./services/db');
@@ -6,6 +8,10 @@ var jwt = require('./services/jwt');
 var storage = require('./services/storage');
 var authCheck = require('./services/jwt').authCheck;
 var decoder = require('./services/jwt').jwtdecoder;
+
+var privateKey = fs.readFileSync('certs/selfsigned.key');
+var certificate = fs.readFileSync('certs/selfsigned.crt');
+var credentials = {key: privateKey, cert: certificate};
 
 const app = express();
 var corsOptions = {
@@ -15,9 +21,10 @@ var corsOptions = {
 app.use(cors());
 
 app.use(bodyParser.json()); // for parsing application/json
+app.use(authCheck);
 
 
-app.get('/user/:userId', authCheck, (req, res) => {
+app.get('/user/:userId', (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
   db.getAllCodes(1);
 }).post((req, res) => 
@@ -27,8 +34,7 @@ app.get('/user/:userId', authCheck, (req, res) => {
 
 app.route('/codes')
   .get((req, res) => {
-    var userid = decoder(req.get('Authorization')).userid
-
+    var userid = decoder(req.get('identity')).userid
     db.getAllCodes(userid)
     .then((row) => {
       var allEntries = row.map((item) => {
@@ -41,7 +47,7 @@ app.route('/codes')
     });
   })
   .post((req, res) => {
-    var userid = decoder(req.get('Authorization')).userid
+    var userid = decoder(req.get('identity')).userid
     var badVouchers = req.body.filter( (voucher) => {
       if (!voucher.title) {
         return voucher;
@@ -81,7 +87,7 @@ app.post('/code', (req, res) => {
 
 
 app.get('/code/:title/single', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid
+  var userid = decoder(req.get('identity')).userid
 
   db.getSingleUnvouchedByTitle(userid, req.params.title)
     .then((data) => {
@@ -95,7 +101,7 @@ app.get('/code/:title/single', (req, res) => {
 
 
 app.get('/codes/unique', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid
+  var userid = decoder(req.get('identity')).userid;
   db.getAllUniqueUnvouchedCodesWithCounts(userid)
   .then((row) => {
     res.status(200).send(row);
@@ -107,7 +113,7 @@ app.get('/codes/unique', (req, res) => {
 
 
 app.get('/codes/unvouched', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid
+  var userid = decoder(req.get('identity')).userid
 
   db.getUnvouchedCodes(userid)
     .then((data) => {
@@ -123,7 +129,7 @@ app.get('/codes/unvouched', (req, res) => {
 // app.get('/code/:uid', (req, res) => {
 app.route('/code/:uid')
   .get((req, res) => {
-    var userid = decoder(req.get('Authorization')).userid;
+    var userid = decoder(req.get('identity')).userid;
 
     db.getSingleCode(userid, req.params.uid)
       .then((row) => {
@@ -148,30 +154,31 @@ app.route('/code/:uid')
       });
   })
   .put((req, res) => {
-    var userid = decoder(req.get('Authorization')).userid;
+    var userid = decoder(req.get('identity')).userid;
     var voucherId = req.params.uid;
-    console.log(`voucher ${voucherId} user ${userid}`);
 
     var voucher = req.body;
     // if expiration is after today mark as expired
     // status not able to be set to pend
     // if image deleted clear filename
-    console.log(JSON.stringify(req.body));
     db.updateCode(voucher.code, voucher.title, voucher.description, voucher.sent, 
       voucher.recipient, voucher.unique, voucher.status, voucher.expiration,
       voucher.filename, voucherId, userid)
       .then((row) => {
-        console.log(row);
-        res.status(201).send(row);
+        if (row.affectedRows > 0) {
+          res.status(201).send();
+        } else {
+          res.status(400).send();
+        }
       })
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send();
       });
   });
 
 
 app.get('/code/:uid/image', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid;
+  var userid = decoder(req.get('identity')).userid;
   db.getSingleCode(userid, req.params.uid)
     .then((row) => {
       var key = row[0].obj_key;
@@ -196,11 +203,12 @@ app.get('/code/:uid/image', (req, res) => {
 
 
 app.put('/send/:codeId', (req, res) => {
-  var userid = decoder(req.get('Authorization')).userid;
+  var userid = decoder(req.get('identity')).userid;
   db.updateCodeToPending(userid, req.params.codeId, req.body.recipient)
   .then((row) => {
     if (row.changedRows == 1) {
       // send SNS
+      // UI will need to handle error from SNS
       res.status(204).send();
     } else {
       res.status(400).send(req.body);
@@ -232,4 +240,5 @@ app.get('/', (req, res) => {
   // });
 });
 
-app.listen(3000, () => console.log('CodeMule listening on port 3000!'));
+// app.listen(3001, () => console.log('CodeMule listening on port 3000!'));
+https.createServer(credentials, app).listen(3000);
