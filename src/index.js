@@ -3,7 +3,6 @@ var fs = require('fs');
 var https = require('https');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-// const querystring = require('querystring'); 
 var db = require('./services/db');
 var jwt = require('./services/jwt');
 var storage = require('./services/storage');
@@ -23,10 +22,6 @@ app.use(cors());
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(authCheck);
-
-app.get('/authedup', (req, res) => {
-  res.status(200).send();
-});
 
 app.get('/user/:userId', (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
@@ -85,8 +80,7 @@ app.route('/codes')
 
 app.post('/code', (req, res) => {
   // Takes a single code with a base64 encoded image
-  const userid = decoder(req.get('identity')).userid
-  console.log(JSON.stringify(req.body));
+  const userid = decoder(req.get('identity')).userid;
   const {
     title,
     code,
@@ -122,12 +116,32 @@ app.get('/code/:title/single', (req, res) => {
 
 app.get('/codes/unique', (req, res) => {
   var userid = decoder(req.get('identity')).userid;
+  var {
+    count,
+    page,
+  } = req.query;
+  count = parseInt(count) || 10;
+  page = parseInt(page) || 1;
+  const startIndex = (page - 1) * count;
 
-  db.getAllUniqueUnvouchedCodesWithCounts(userid)
+  db.getAllUniqueUnvouchedCodesWithCounts(userid, startIndex, count)
     .then((row) => {
       res.status(200).send(row);
     }).catch((err) => {
-      console.log(err);
+      //console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get('/codes/unique/count', (req, res) => {
+  var userid = decoder(req.get('identity')).userid;
+
+  db.getAllUniqueUnvouchedCount(userid)
+    .then((row) => {
+      console.log('b', row);
+      res.status(200).send(row);
+    })
+    .catch((err) => {
       res.status(500).send();
     });
 });

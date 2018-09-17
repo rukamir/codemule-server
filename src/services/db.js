@@ -34,9 +34,15 @@ module.exports = {
     return query('SELECT * FROM voucher '
     + 'WHERE sent IS NULL AND owner_id = ?', [userId]);
   },
-  getAllUniqueUnvouchedCodesWithCounts(userId) {
+  getAllUniqueUnvouchedCodesWithCounts(userId, itemIndex = 0, perPage = 10) {
     return query('SELECT count(title) as `count`, title FROM voucher '
-    + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title', [userId]);
+    + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title '
+    + 'LIMIT ?, ?', [userId, itemIndex, perPage]);
+  },
+  getAllUniqueUnvouchedCount(userId) {
+    return query('SELECT count(count) as total FROM (SELECT count(title) as `count` FROM voucher '
+    + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title) as group1'
+    , [userId]);
   },
   getAllUniqueUnvouchedCodes(userId) {
     return query('SELECT title FROM voucher '
