@@ -30,6 +30,7 @@ axios.get(jwkAddress)
     console.log(error);
   });
 
+  // todo: add a verification method for idTokens
 exports.authCheck = function(req, res, next){
  const jwtToken = req.get('Authorization');
  ValidateToken(pems, jwtToken)
@@ -38,7 +39,9 @@ exports.authCheck = function(req, res, next){
    })
    .catch((err)=>{
     console.log(err)
-    res.status(401).send(err)
+    
+    res.redirect(401, '/');
+    // res.status(401).send(err)
    })
 }
 
@@ -82,5 +85,5 @@ function ValidateToken(pems, jwtAccessToken){
     }
    })
   })
-  return p
+  return p;
  }

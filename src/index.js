@@ -3,6 +3,7 @@ var fs = require('fs');
 var https = require('https');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+// const querystring = require('querystring'); 
 var db = require('./services/db');
 var jwt = require('./services/jwt');
 var storage = require('./services/storage');
@@ -23,6 +24,9 @@ app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 app.use(authCheck);
 
+app.get('/authedup', (req, res) => {
+  res.status(200).send();
+});
 
 app.get('/user/:userId', (req, res) => {
   res.status(200).send(`retrieved to user ${req.params.userId}`)
@@ -81,8 +85,24 @@ app.route('/codes')
 
 app.post('/code', (req, res) => {
   // Takes a single code with a base64 encoded image
+  const userid = decoder(req.get('identity')).userid
   console.log(JSON.stringify(req.body));
-  res.send(JSON.stringify(req.body));
+  const {
+    title,
+    code,
+    description,
+    unique,
+    filename,
+    expiration,
+  } = req.body;
+  db.insertNewSingleCode(userid, code, title, description, unique)
+    .then((data) => {
+      res.status(201).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("error");
+    });
 });
 
 
@@ -102,15 +122,15 @@ app.get('/code/:title/single', (req, res) => {
 
 app.get('/codes/unique', (req, res) => {
   var userid = decoder(req.get('identity')).userid;
-  db.getAllUniqueUnvouchedCodesWithCounts(userid)
-  .then((row) => {
-    res.status(200).send(row);
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).send();
-  });
-});
 
+  db.getAllUniqueUnvouchedCodesWithCounts(userid)
+    .then((row) => {
+      res.status(200).send(row);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
 
 app.get('/codes/unvouched', (req, res) => {
   var userid = decoder(req.get('identity')).userid
@@ -240,5 +260,5 @@ app.get('/', (req, res) => {
   // });
 });
 
-// app.listen(3001, () => console.log('CodeMule listening on port 3000!'));
+// app.listen(3000, () => console.log('CodeMule listening on port 3000!'));
 https.createServer(credentials, app).listen(3000);

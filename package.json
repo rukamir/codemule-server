@@ -4,6 +4,8 @@
   "description": "back end for codemule code distribution service",
   "main": "src/index.js",
   "scripts": {
+    "start-docker": "docker run -p 127.0.0.1:3000:3000 -e SQL_ADDRESS -e SQL_USER -e SQL_PASS -e SQL_DB_NAME -e COGNITO_POOL_ID -e COGNITO_REGION codemule-dev",
+    "build-docker": "docker build . -t codemule-dev",
     "test": "jest -o",
     "test-all": "jest --all",
     "test-watch": "jest --watch",

@@ -38,6 +38,10 @@ module.exports = {
     return query('SELECT count(title) as `count`, title FROM voucher '
     + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title', [userId]);
   },
+  getAllUniqueUnvouchedCodes(userId) {
+    return query('SELECT title FROM voucher '
+    + 'WHERE sent IS NULL AND `status` IS NULL AND owner_id = ? GROUP BY title', [userId]);
+  },
   getAllUnvouchedCodes(userId) {
     return query('SELECT * FROM voucher WHERE owner_id = ? AND `sent` IS NULL AND `status` IS NULL', [userId]);
   },
