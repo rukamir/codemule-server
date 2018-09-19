@@ -8,11 +8,19 @@ router.get('/jimmy', (req, res) => {
   res.status(420).send("you did it");
 });
 
+// Inventory screen
 router.route('/codes')
   .get((req, res) => {
     var userid = decoder(req.get('identity')).userid
+    var {
+      count,
+      page,
+    } = req.query;
+    count = parseInt(count) || 10;
+    page = parseInt(page) || 1;
+    const startIndex = (page - 1) * count;
 
-    db.getAllCodes(userid)
+    db.getAllCodes(userid, startIndex, count)
       .then((row) => {
         var allEntries = row.map((item) => {
           delete item.obj_key;
@@ -56,6 +64,19 @@ router.route('/codes')
       });
   });
 
+router.get('/codes/count', (req, res) => {
+  var userid = decoder(req.get('identity')).userid
+
+  db.getAllCodesCount(userid)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
 
 router.post('/code', (req, res) => {
   // Takes a single code with a base64 encoded image
@@ -68,7 +89,7 @@ router.post('/code', (req, res) => {
     filename,
     expiration,
   } = req.body;
-  
+
   db.insertNewSingleCode(userid, code, title, description, unique)
     .then((data) => {
       res.status(201).send(data);
@@ -94,6 +115,7 @@ router.get('/code/:title/single', (req, res) => {
 });
 
 
+// Send Page
 router.get('/codes/unique', (req, res) => {
   var userid = decoder(req.get('identity')).userid;
   var {

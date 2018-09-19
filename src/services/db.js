@@ -27,8 +27,13 @@ var query = function( sql, args ) {
 };
 
 module.exports = {
-  getAllCodes(userId) {
-    return query('SELECT * FROM `voucher` WHERE `owner_id` = ?', [userId]);
+  getAllCodes(userId, itemIndex = 0, perPage = 10) {
+    return query('SELECT * FROM `voucher` WHERE `owner_id` = ? '
+    + 'LIMIT ?, ?', [userId, itemIndex, perPage]);
+  },
+  getAllCodesCount(userId) {
+    return query('SELECT count(*) as total FROM `voucher` WHERE `owner_id` = ? '
+      , [userId]);
   },
   getUnvouchedCodes(userId) {
     return query('SELECT * FROM voucher '
